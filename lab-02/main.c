@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <math.h>
 
-
-/**
- * qweqwe
- * @return 
- */
 int main() {
 
     double a, x, G, F, Y;
