@@ -3,85 +3,86 @@
 #include <stdlib.h>
 #include <time.h>
 #include <omp.h>
-#define N 5000
 
-struct points
+#define ARRAY_SIZE 200
+
+struct Point    /* Тут хранятся все точки*/
 {
-    double x[N];
-    double y[N];
+    double x[ARRAY_SIZE];
+    double y[ARRAY_SIZE];
 };
 
-struct main_point
+struct Facilities_verification /*Относительно этих точек проверяется принадлежность*/
 {
-    double main_x;
-    double main_y;
+    double x2;
+    double y2;
 };
 
-struct points generator_array(void)
+typedef struct Facilities_verification point;
+
+typedef struct Point Points;
+
+Points Array_getRandom_Points(void) /*Функция генерации случайных чисел в заданном диапазоне*/
 {
-    struct points array;
+    Points Array;
     int i = 0;
     srand(time(NULL));
 
-    for (i = 0; i < N; i++) {
-        array.x[i] = (double) rand() / RAND_MAX * (5.0 + 5.0) - 5.0;
-        array.y[i] = (double) rand() / RAND_MAX * (5.0 + 5.0) - 5.0;
+    for (i = 0; i < 200; i++) {
+        Array.x[i] = (double) rand() / RAND_MAX * (10.0 + 10.0);
+        Array.y[i] = (double) rand() / RAND_MAX * (10.0 + 10.0);
     }
-    return array;
+    return Array;
 }
 
-int belongOrNot(struct main_point one_p, struct main_point all_p,double rad)
-{
-    double distance;
-    distance = sqrt((pow(2,one_p.main_x-all_p.main_x))+pow(2,one_p.main_y-all_p.main_y));
-    if (distance <= rad)
+int accessory_to_region(point Array, point mass,double radius){ /*Функция проверки принадлежности области*/
+    double d;
+    d = sqrt((pow(2,mass.x2-Array.x2))+pow(2,mass.y2-Array.y2));
+    if (d <= radius)
         return 1;
-    else
-        return 0;
 }
-int amountOfPoints(double rad)
+int amount_of_points_points_in_vicinity(double rad) /*функция получения колличества точек в окресности*/
 {
-    struct main_point thePoint, allPoints;
-    struct points mass;
-    int counter = 0;
-    int i = 0, choice = 0;
+    point xx, included_in_vicinity;
+    Points massif;
+    int i = 0, change = 0, receipt = 0;;
     srand(time(NULL));
 
-    choice = rand() % N;
+    change = rand() % 100;
 
-    mass = generator_array();
-    thePoint.main_x = mass.x[choice];
-    thePoint.main_y = mass.y[choice];
+    massif = Array_getRandom_Points();
+    massif.x[change] = xx.x2;
+    massif.y[change] = xx.y2;
 
-    for (i = 0; i < N; i++)
+    for (i = 0; i < 200; i++)
     {
-        allPoints.main_x = mass.x[i];
-        allPoints.main_y = mass.y[i];
-        if (belongOrNot(thePoint,allPoints,rad) == 1)
+        included_in_vicinity.x2 = massif.x[i];
+        included_in_vicinity.y2 = massif.y[i];
+        if (accessory_to_region(xx,included_in_vicinity,rad) == 1)
         {
-            counter++;
+            receipt++;
         }
     }
-    if (counter != 0)
-    {
-        counter = counter - 1;
+    if (receipt != 0) {
+
     }
-    return counter;
+    return receipt;
 }
 
 int main()
 {
-    FILE* output;
-    double radius,start,end;
+     FILE* output;
+    double radius,start,stop;
+    srand(time(NULL));
 
-    printf("Введите радиус окрестности: ");
-    scanf("%lf", &radius);
     start = omp_get_wtime();
-    printf("Количество точек в заданной окрестности: %d\n", amountOfPoints(radius));
-    end = omp_get_wtime();
-    printf("Время выполнения программы: %lf\n", end - start);
-    output = fopen("/home/valery/lab-08_c/time.txt","a");
-    fprintf(output,"%lf\n",end - start);
+    radius = (double) rand() / RAND_MAX * (30.0);
+    printf("Радиус окрестности: %lf\n", radius);
+    printf("Количество точек в окрестности: %d\n", amount_of_points_points_in_vicinity(radius));
+    stop = omp_get_wtime();
+    printf("Время работы программы: %lf\n\n", stop - start);
+    output = fopen("/home/valery/lab-08/time.txt","a");
+    fprintf(output,"%lf\n",stop - start);
     fclose(output);
     return 0;
 }
